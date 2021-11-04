@@ -1,0 +1,25 @@
+#Ignore all files without file extensions
+*
+!*.*
+!*/
+
+#Ignore executable files used for testing
+*.out
+*.class
+*.exe
+*.o
+*.DS_Store
+*.log
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.pdf
+*.eps
+*.data
+
+node_modules/
+
+.vscode/
+
+apiConfig.js
