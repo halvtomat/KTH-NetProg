@@ -8,34 +8,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import model.User;
-
-public class AuthController extends HttpServlet {
+public class QuizController extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
-			System.out.println("--- GET AUTH ---");
+			System.out.println("--- GET QUIZ ---");
 			
 			HttpSession session = request.getSession(true);
 
-			response.sendRedirect("/app/login.jsp");
+			response.sendRedirect("/app/quiz.jsp");
 		}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 		throws ServletException, IOException {
-			System.out.println("--- POST AUTH ---");
+			System.out.println("--- POST QUIZ ---");
 
-			String username = request.getParameter("username");
-			String password = request.getParameter("password");
-			String email = request.getParameter("email");
-			User user = new User(email, username, password);
-			System.out.println(user.toString());
-
-			if(true) {
-				System.out.println("--- --- SUCCESFUL LOGIN");
-				response.sendRedirect("/app/menu");
-			}
+			
 	}
 }
+
