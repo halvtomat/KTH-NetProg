@@ -9,12 +9,20 @@
 		<h1>Select a quiz below</h1>
 		<ul>
 			<%
-			
+			Quiz[] quizzes = (Quiz[])session.getAttribute("quizzes");
+			for( Quiz q : quizzes) {
+				out.println("<li><a href=/app/Quiz?id=" + q.getId() +">" + q.getSubject() + "</a></li>");
+			}
 			%>
-			<li><a href="#">Quiz 1</a></li>
-			<li><a href="#">Quiz 2</a></li>
-			<li><a href="#">Quiz 3</a></li>
-			<li><a href="#">Quiz 4</a></li>
+		</ul>
+		<h2>Previous scores</h2>
+		<ul>
+			<%
+			Result[] results = (Result[])session.getAttribute("results");
+			for( Result r : results) {
+				out.println("<li>Quiz: " + r.getQuizId() + " , Score: " + r.getScore() + "</li>");
+			}
+			%>
 		</ul>
 	</body>
 </html>

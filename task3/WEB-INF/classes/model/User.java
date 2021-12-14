@@ -4,6 +4,7 @@ public class User {
 	String email;
 	String username;
 	String password;
+	int id;
 
 	public User(String email, String username, String password) {
 		this.email = email;
@@ -19,16 +20,16 @@ public class User {
 		return username;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public int getId() {
+		return id;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@Override
