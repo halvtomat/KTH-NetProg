@@ -47,6 +47,8 @@ public class DBHandler {
 			System.out.println("--- DB FAILED TO GET QUIZZES ---");
 			e.printStackTrace();
 		}
+		for(Quiz q : quizzes)
+			System.out.println(q.toString());
 		return quizzes;
 	}
 
@@ -55,7 +57,7 @@ public class DBHandler {
 		Result[] results = null;
 		int i = 0;
 		try {
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM results where user_id=" + user.getId());
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM results WHERE user_id=" + user.getId());
 			rs.next();
 			results = new Result[rs.getInt(1)];
 			rs = st.executeQuery("SELECT * FROM results WHERE user_id=" + user.getId());
@@ -65,6 +67,54 @@ public class DBHandler {
 			System.out.println("--- DB FAILED TO GET RESULTS ---");
 			e.printStackTrace();
 		}
+		for(Result r : results)
+			System.out.println(r.toString());	
 		return results;
+	}
+
+	public Question[] getQuestions(int quizId) {
+		System.out.println("--- DB GET QUESTIONS ---");
+		Question[] questions = null;
+		int i = 0;
+		try {
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM selector WHERE quiz_id=" + quizId);
+			rs.next();
+			questions = new Question[rs.getInt(1)];
+			int[] ids = new int[rs.getInt(1)];
+			rs = st.executeQuery("SELECT * FROM selector WHERE quiz_id=" + quizId);
+			while(rs.next())
+				ids[i++] = rs.getInt("question_id");
+			i = 0;
+			for (int j : ids) {
+				rs = st.executeQuery("SELECT * FROM questions WHERE id=" + j);
+				rs.next();
+				String[] stringAnswers = rs.getString("answer").split("/");
+				int[] answers = new int[stringAnswers.length];
+				for (int k = 0; k < stringAnswers.length; k++)
+					answers[k] = Integer.parseInt(stringAnswers[k]);
+				questions[i++] = new Question(rs.getString("text"), rs.getString("options").split("/"), answers);
+			}
+		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO GET QUESTIONS ---");
+			e.printStackTrace();
+		}
+		for(Question q : questions)
+			System.out.println(q.toString());	
+		return questions;
+	}
+
+	public void newResult(User user, int quizId, int score) {
+		System.out.println("--- DB NEW RESULT ---");
+		try {
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM results WHERE user_id=" + user.getId() + " AND quiz_id=" + quizId);
+			rs.next();
+			if(rs.getInt(1) == 0)
+				st.executeQuery("INSERT INTO results (user_id, quiz_id, score) VALUES (" + user.getId() + ", " + quizId + ", " + score + ")");
+			else
+				st.executeQuery("UPDATE results SET score=" + score + " WHERE user_id=" + user.getId() + " AND quiz_id=" + quizId);
+		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO UPDATE RESULT ---");
+			e.printStackTrace();
+		}
 	}
 }

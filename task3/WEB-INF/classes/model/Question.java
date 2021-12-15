@@ -19,7 +19,7 @@ public class Question {
 		return options;
 	}
 
-	public int[] answer() {
+	public int[] getAnswer() {
 		return answer;
 	}
 
