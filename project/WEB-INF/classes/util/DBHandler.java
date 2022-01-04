@@ -69,7 +69,7 @@ public class DBHandler {
 													rs.getString("comment"),
 													rs.getBoolean("help"),
 													rs.getBoolean("receiving_help"),
-													rs.getDate("time_joined"));
+													rs.getTimestamp("time_joined"));
 		} catch (SQLException e) {
 			System.out.println("--- DB FAILED TO GET PARTICIPANTS ---");
 			e.printStackTrace();
@@ -118,6 +118,37 @@ public class DBHandler {
 				st.executeQuery("UPDATE results SET score=" + score + " WHERE user_id=" + user.getId() + " AND quiz_id=" + quizId);
 		} catch (SQLException e) {
 			System.out.println("--- DB FAILED TO UPDATE RESULT ---");
+			e.printStackTrace();
+		}
+	}
+
+	public void enqueue(Participant participant) {
+		System.out.println("--- DB ENQUEUE ---");
+		try {
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM participants WHERE user_id=" + participant.getUserId() + " AND queue_id=" + participant.getQueueId());
+			rs.next();
+			if(rs.getInt(1) == 0)
+				st.executeQuery("INSERT INTO participants (user_id, queue_id, location, comment, help) VALUES (" +
+					participant.getUserId() + "," +
+					participant.getQueueId() + ",\'" +
+					participant.getLocation() + "\',\'" +
+					participant.getComment() + "\'," +
+					participant.getHelp() + ")");
+		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO ENQUEUE ---");
+			e.printStackTrace();
+		}
+	}
+
+	public void dequeue(int userId, int queueId) {
+		System.out.println("--- DB DEQUEUE ---");
+		System.out.println("ARGUMENTS = userId: " + userId + " , queueId: " + queueId);
+		try {
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM participants WHERE user_id=" + userId + " AND queue_id=" + queueId);
+			rs.next();
+			if(rs.getInt(1) != 0)
+				st.executeQuery("DELETE FROM participants WHERE user_id=" + userId + " AND queue_id=" + queueId);
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}

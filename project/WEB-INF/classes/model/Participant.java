@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Participant {
 	int userId;
@@ -9,9 +9,9 @@ public class Participant {
 	String comment;
 	boolean help;
 	boolean receivingHelp;
-	Date timeJoined;
+	Timestamp timeJoined;
 
-	public Participant(int userId, int queueId, String location, String comment, boolean help, boolean receivingHelp, Date timeJoined) {
+	public Participant(int userId, int queueId, String location, String comment, boolean help, boolean receivingHelp, Timestamp timeJoined) {
 		this.userId = userId;
 		this.queueId = queueId;
 		this.location = location;
@@ -45,7 +45,7 @@ public class Participant {
 		return receivingHelp;
 	}
 
-	public Date getTimeJoined() {
+	public Timestamp getTimeJoined() {
 		return timeJoined;
 	}
 
@@ -69,5 +69,9 @@ public class Participant {
 				"\n\treceivingHelp: " + receivingHelp +
 				"\n\ttimeJoined: " + timeJoined +
 				"\n}";
+	}
+
+	public String getValues() {
+		return userId + "," + queueId + "," + location + "," + comment + "," + help;
 	}
 }

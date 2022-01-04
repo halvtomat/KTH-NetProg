@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import model.User;
+import model.Participant;
 import model.Queue;
 import util.DBHandler;
 
@@ -33,7 +34,14 @@ public class QueueController extends HttpServlet {
 			int queueId = Integer.parseInt(request.getParameter("id"));
 			String queueName = db.getQueueName(queueId);
 			Queue queue = new Queue(queueName, queueId);
-			session.setAttribute("participants", db.getParticipants(queueId));
+			Participant[] participants = db.getParticipants(queueId);
+
+			String[] usernames = new String[participants.length];
+			for(int i = 0; i < usernames.length; i++)
+				usernames[i] = db.getUsername(participants[i].getUserId());
+
+			session.setAttribute("participants", participants);
+			session.setAttribute("usernames", usernames);
 			session.setAttribute("queue", queue);
 			response.sendRedirect("/project/queue.jsp");
 		}
@@ -45,29 +53,35 @@ public class QueueController extends HttpServlet {
 		System.out.println("--- POST QUEUE ---");
 
 		HttpSession session = request.getSession(true);
-		/*if(session.isNew() || (Boolean)session.getAttribute("auth") == Boolean.FALSE)
-			response.sendRedirect("/app/login");
+
+		DBHandler db;
+		if((db = (DBHandler)session.getAttribute("db")) == null) {
+			db = new DBHandler();
+			session.setAttribute("db", db);
+		}
+
+		if(session.isNew() || (Boolean)session.getAttribute("auth") == Boolean.FALSE)
+			response.sendRedirect("/project/login");
 		else {
-			Question[] questions = (Question[])session.getAttribute("questions");
-			int score = 0;
-			for(int i = 0; i < questions.length; i++) {
-				int[] answers = new int[questions[i].getOptions().length];
-				for(int j = 0; j < answers.length; j++) {
-					String s = request.getParameter("q"+i+"o"+j);
-					if(s != null && s.equals("on"))
-						answers[j] = 1;
-					else
-						answers[j] = 0;
-				}
-				System.out.println("{\n\tsupplied answer: " + Arrays.toString(answers) + "\n}");
-				if(Arrays.equals(answers, questions[i].getAnswer()))
-					score++;
+			String action = request.getParameter("action");
+			switch(action) {
+				case "enqueue":
+					Participant p = new Participant(
+						((User)session.getAttribute("user")).getId(),
+						((Queue)session.getAttribute("queue")).getId(),
+						request.getParameter("location"),
+						request.getParameter("comment"),
+						Boolean.valueOf(request.getParameter("help")),
+						false,
+						null);
+					db.enqueue(p);
+					break;
+				case "dequeue":
+					db.dequeue(((User)session.getAttribute("user")).getId(), ((Queue)session.getAttribute("queue")).getId());
+					break;
 			}
-			User user = (User)session.getAttribute("user");
-			int quizId = (int)session.getAttribute("quizId");
-			db.newResult(user, quizId, score);
-			response.sendRedirect("/app/menu");
-		}*/
+			response.sendRedirect("/project/queue.jsp");
+		}
 	}
 }
 
