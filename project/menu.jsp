@@ -10,7 +10,7 @@
 			<%
 			Queue[] queues = (Queue[])session.getAttribute("queues");
 			for( Queue q : queues)
-				out.println("<li><a href=/app/queue?id=" + q.getId() +">" + q.getName() + "</a></li>");
+				out.println("<li><a href=/project/queue?id=" + q.getId() +">" + q.getName() + "</a></li>");
 			%>
 		</ul>
 	</body>

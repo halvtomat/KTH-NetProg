@@ -13,8 +13,6 @@ import util.DBHandler;
 
 public class AuthController extends HttpServlet {
 
-	DBHandler db = new DBHandler();
-	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
@@ -22,33 +20,38 @@ public class AuthController extends HttpServlet {
 		
 		HttpSession session = request.getSession(true);
 		if(!session.isNew() && (Boolean)session.getAttribute("auth") == Boolean.TRUE)
-			response.sendRedirect("/app/menu");
+			response.sendRedirect("/project/menu");
 		else
-			response.sendRedirect("/app/login.jsp");
+			response.sendRedirect("/project/login.jsp");
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		System.out.println("--- POST AUTH ---");
+
 		HttpSession session = request.getSession(true);
+		DBHandler db;
+		if((db = (DBHandler)session.getAttribute("db")) == null) {
+			db = new DBHandler();
+			session.setAttribute("db", db);
+		}
 
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		String email = request.getParameter("email");
-		User user = new User(email, username, password);
+		User user = new User(username, password);
 		System.out.println(user.toString());
 
 		if(db.authenticate(user)) {
 			System.out.println("--- --- SUCCESFUL LOGIN");
 			session.setAttribute("user", user);
 			session.setAttribute("auth", true);
-			response.sendRedirect("/app/menu");
+			response.sendRedirect("/project/menu");
 		} else {
 			System.out.println("--- --- UNSUCCESFUL LOGIN");
 			session.setAttribute("user", null);
 			session.setAttribute("auth", false);
-			response.sendRedirect("/app/login");
+			response.sendRedirect("/project/login");
 		}
 	}
 }

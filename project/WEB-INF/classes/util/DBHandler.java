@@ -1,6 +1,7 @@
 package util;
 
 import java.sql.*;
+
 import model.*;
 
 public class DBHandler {
@@ -9,7 +10,7 @@ public class DBHandler {
 
 	public DBHandler() {
 		try {
-			String url = "jdbc:mariadb://localhost:3306/netprog_task3?user=task3&password=task3";
+			String url = "jdbc:mariadb://localhost:3306/netprog_project?user=netprog_project&password=project";
 			Class.forName("org.mariadb.jdbc.Driver");
 			con = DriverManager.getConnection(url);
 			st = con.createStatement();
@@ -21,7 +22,7 @@ public class DBHandler {
 	
 	public boolean authenticate(User user) {
 		try {
-			ResultSet rs = st.executeQuery("SELECT * FROM users WHERE username= '" + user.getEmail() + "' AND password=MD5('" + user.getPassword() + "')");
+			ResultSet rs = st.executeQuery("SELECT * FROM users WHERE username= '" + user.getUsername() + "' AND password=MD5('" + user.getPassword() + "')");
 			if(rs.next()) {
 				user.setId(rs.getInt(1));				
 				return true;
@@ -32,75 +33,78 @@ public class DBHandler {
 		return false;
 	}
 
-	public Quiz[] getQuizzes() {
-		System.out.println("--- DB GET QUIZZES ---");
-		Quiz[] quizzes = null;
+	public Queue[] getQueues() {
+		System.out.println("--- DB GET QUEUES ---");
+		Queue[] queues = null;
 		int i = 0;
 		try {
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM quizzes");
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM queues");
 			rs.next();
-			quizzes = new Quiz[rs.getInt(1)];
-			rs = st.executeQuery("SELECT * FROM quizzes");
+			queues = new Queue[rs.getInt(1)];
+			rs = st.executeQuery("SELECT * FROM queues");
 			while (rs.next())
-				quizzes[i++] = new Quiz(rs.getString("subject"), rs.getInt("id"));
+				queues[i++] = new Queue(rs.getString("name"), rs.getInt("id"));
 		} catch (SQLException e) {
-			System.out.println("--- DB FAILED TO GET QUIZZES ---");
+			System.out.println("--- DB FAILED TO GET QUEUES ---");
 			e.printStackTrace();
 		}
-		for(Quiz q : quizzes)
+		for(Queue q : queues)
 			System.out.println(q.toString());
-		return quizzes;
+		return queues;
 	}
 
-	public Result[] getResults(User user) {
-		System.out.println("--- DB GET RESULTS ---");
-		Result[] results = null;
+	public Participant[] getParticipants(int queueId) {
+		System.out.println("--- DB GET PARTICIPANTS ---");
+		Participant[] participants = null;
 		int i = 0;
 		try {
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM results WHERE user_id=" + user.getId());
+			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM participants WHERE queue_id=" + queueId);
 			rs.next();
-			results = new Result[rs.getInt(1)];
-			rs = st.executeQuery("SELECT * FROM results WHERE user_id=" + user.getId());
+			participants = new Participant[rs.getInt(1)];
+			rs = st.executeQuery("SELECT * FROM participants WHERE queue_id=" + queueId);
 			while (rs.next())
-				results[i++] = new Result(rs.getInt("user_id"), rs.getInt("quiz_id"), rs.getInt("score"));
+				participants[i++] = new Participant(rs.getInt("user_id"),
+													rs.getInt("queue_id"),
+													rs.getString("location"),
+													rs.getString("comment"),
+													rs.getBoolean("help"),
+													rs.getBoolean("receiving_help"),
+													rs.getDate("time_joined"));
 		} catch (SQLException e) {
-			System.out.println("--- DB FAILED TO GET RESULTS ---");
+			System.out.println("--- DB FAILED TO GET PARTICIPANTS ---");
 			e.printStackTrace();
 		}
-		for(Result r : results)
-			System.out.println(r.toString());	
-		return results;
+		for(Participant p : participants)
+			System.out.println(p.toString());	
+		return participants;
 	}
 
-	public Question[] getQuestions(int quizId) {
-		System.out.println("--- DB GET QUESTIONS ---");
-		Question[] questions = null;
-		int i = 0;
+	public String getUsername(int userId) {
+		System.out.println("--- DB GET USERNAME ---");
+		String username = null;
 		try {
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM selector WHERE quiz_id=" + quizId);
+			ResultSet rs = st.executeQuery("SELECT username FROM users WHERE id=" + userId);
 			rs.next();
-			questions = new Question[rs.getInt(1)];
-			int[] ids = new int[rs.getInt(1)];
-			rs = st.executeQuery("SELECT * FROM selector WHERE quiz_id=" + quizId);
-			while(rs.next())
-				ids[i++] = rs.getInt("question_id");
-			i = 0;
-			for (int j : ids) {
-				rs = st.executeQuery("SELECT * FROM questions WHERE id=" + j);
-				rs.next();
-				String[] stringAnswers = rs.getString("answer").split("/");
-				int[] answers = new int[stringAnswers.length];
-				for (int k = 0; k < stringAnswers.length; k++)
-					answers[k] = Integer.parseInt(stringAnswers[k]);
-				questions[i++] = new Question(rs.getString("text"), rs.getString("options").split("/"), answers);
-			}
+			username = rs.getString(1);
 		} catch (SQLException e) {
-			System.out.println("--- DB FAILED TO GET QUESTIONS ---");
+			System.out.println("--- DB FAILED TO GET USERNAME ---");
 			e.printStackTrace();
 		}
-		for(Question q : questions)
-			System.out.println(q.toString());	
-		return questions;
+		return username;
+	}
+
+	public String getQueueName(int queueId) {
+		System.out.println("--- DB GET QUEUE NAME ---");
+		String queueName = null;
+		try {
+			ResultSet rs = st.executeQuery("SELECT name FROM queues WHERE id=" + queueId);
+			rs.next();
+			queueName = rs.getString(1);
+		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO GET QUEUE NAME ---");
+			e.printStackTrace();
+		}
+		return queueName;
 	}
 
 	public void newResult(User user, int quizId, int score) {

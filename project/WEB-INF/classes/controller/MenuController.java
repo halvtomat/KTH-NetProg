@@ -8,14 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import model.Quiz;
-import model.Result;
 import model.User;
 import util.DBHandler;
 
 public class MenuController extends HttpServlet {
-
-	DBHandler db = new DBHandler();
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -23,12 +19,17 @@ public class MenuController extends HttpServlet {
 		System.out.println("--- GET MENU ---");
 
 		HttpSession session = request.getSession(true);
+		DBHandler db;
+		if((db = (DBHandler)session.getAttribute("db")) == null) {
+			db = new DBHandler();
+			session.setAttribute("db", db);
+		}
+
 		if(session.isNew() || (Boolean)session.getAttribute("auth") == Boolean.FALSE)
-			response.sendRedirect("/app/login");
+			response.sendRedirect("/project/login");
 		else {
-			session.setAttribute("quizzes", db.getQuizzes());
-			session.setAttribute("results", db.getResults((User)session.getAttribute("user")));
-			response.sendRedirect("/app/menu.jsp");
+			session.setAttribute("queues", db.getQueues());
+			response.sendRedirect("/project/menu.jsp");
 		}
 	}
 

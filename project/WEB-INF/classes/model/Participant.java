@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 public class Participant {
 	int userId;
 	int queueId;
@@ -9,14 +11,14 @@ public class Participant {
 	boolean receivingHelp;
 	Date timeJoined;
 
-	public Result(int userId, int quizId, String location, String comment, boolean help) {
+	public Participant(int userId, int queueId, String location, String comment, boolean help, boolean receivingHelp, Date timeJoined) {
 		this.userId = userId;
-		this.quizId = quizId;
+		this.queueId = queueId;
 		this.location = location;
 		this.comment = comment;
 		this.help = help;
-		this.receivingHelp = false;
-		this.timeJoined = null;
+		this.receivingHelp = receivingHelp;
+		this.timeJoined = timeJoined;
 	}
 
 	public int getUserId() {

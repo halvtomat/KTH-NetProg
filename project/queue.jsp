@@ -24,14 +24,15 @@
 			for(int i = 0; i < participants.length; i++) {
 				out.println("<tr>" +
 								"<th>" + i + "</th>" +
-								"<th>" + users[i].getUsername() + "</th>" +
+								//"<th>" + users[i].getUsername() + "</th>" +
+								"<th>" + participants[i].getUserId() + "</th>" +
 								"<th>" + participants[i].getLocation() + "</th>" +
 								"<th>" + (participants[i].getHelp() ? "help" : "present") + "</th>" +
 								"<th>" + participants[i].getComment() + "</th>" +
 								"<th>" + participants[i].getTimeJoined() + "</th>" +
 							"</tr>");
 			}
-			out.println("</table>")
+			out.println("</table>");
 		}
 		out.println("<form action=enqueue method=post>");
 		out.println("<table>");

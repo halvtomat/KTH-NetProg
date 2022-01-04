@@ -4,7 +4,7 @@ public class Queue {
 	String name;
 	int id;
 
-	public Quiz(String name, int id) {
+	public Queue(String name, int id) {
 		this.name = name;
 		this.id = id;
 	}
