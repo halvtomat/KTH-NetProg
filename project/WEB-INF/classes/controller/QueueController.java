@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 
 import javax.servlet.*;
@@ -65,7 +66,7 @@ public class QueueController extends HttpServlet {
 		else {
 			String action = request.getParameter("action");
 			switch(action) {
-				case "enqueue":
+				case "enqueue": {
 					Participant p = new Participant(
 						((User)session.getAttribute("user")).getId(),
 						((Queue)session.getAttribute("queue")).getId(),
@@ -73,12 +74,46 @@ public class QueueController extends HttpServlet {
 						request.getParameter("comment"),
 						Boolean.valueOf(request.getParameter("help")),
 						false,
-						null);
+						new Timestamp(System.currentTimeMillis()));
+
+					Participant[] ps = (Participant[])session.getAttribute("participants");
+					String[] un = (String[])session.getAttribute("usernames");
+					Participant[] newPs = new Participant[ps.length + 1];
+					String[] newUn = new String[ps.length + 1];
+
+					for(int i = 0; i < ps.length; i++) {
+						newPs[i] = ps[i];
+						newUn[i] = un[i];
+					}
+					newPs[newPs.length - 1] = p;
+					newUn[newUn.length - 1] = db.getUsername(p.getUserId());
+
+					session.setAttribute("participants", newPs);
+					session.setAttribute("usernames", newUn);
 					db.enqueue(p);
 					break;
-				case "dequeue":
-					db.dequeue(((User)session.getAttribute("user")).getId(), ((Queue)session.getAttribute("queue")).getId());
+				}
+				case "dequeue": {
+					int userId = ((User)session.getAttribute("user")).getId();
+					int queueId = ((Queue)session.getAttribute("queue")).getId();
+					
+					Participant[] ps = (Participant[])session.getAttribute("participants");
+					String[] un = (String[])session.getAttribute("usernames");
+					Participant[] newPs = new Participant[ps.length - 1];
+					String[] newUn = new String[ps.length - 1];
+
+					for(int i = 0, k = 0; i < ps.length; i++) {
+						if(ps[i].getUserId() == userId && ps[i].getQueueId() == queueId)
+							continue;
+						newPs[k++] = ps[i];
+						newUn[k++] = un[i];
+					}
+
+					session.setAttribute("participants", newPs);
+					session.setAttribute("usernames", newUn);
+					db.dequeue(userId, queueId);
 					break;
+				}
 			}
 			response.sendRedirect("/project/queue.jsp");
 		}

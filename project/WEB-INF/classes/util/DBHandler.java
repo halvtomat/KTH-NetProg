@@ -107,21 +107,6 @@ public class DBHandler {
 		return queueName;
 	}
 
-	public void newResult(User user, int quizId, int score) {
-		System.out.println("--- DB NEW RESULT ---");
-		try {
-			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM results WHERE user_id=" + user.getId() + " AND quiz_id=" + quizId);
-			rs.next();
-			if(rs.getInt(1) == 0)
-				st.executeQuery("INSERT INTO results (user_id, quiz_id, score) VALUES (" + user.getId() + ", " + quizId + ", " + score + ")");
-			else
-				st.executeQuery("UPDATE results SET score=" + score + " WHERE user_id=" + user.getId() + " AND quiz_id=" + quizId);
-		} catch (SQLException e) {
-			System.out.println("--- DB FAILED TO UPDATE RESULT ---");
-			e.printStackTrace();
-		}
-	}
-
 	public void enqueue(Participant participant) {
 		System.out.println("--- DB ENQUEUE ---");
 		try {
@@ -142,7 +127,6 @@ public class DBHandler {
 
 	public void dequeue(int userId, int queueId) {
 		System.out.println("--- DB DEQUEUE ---");
-		System.out.println("ARGUMENTS = userId: " + userId + " , queueId: " + queueId);
 		try {
 			ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM participants WHERE user_id=" + userId + " AND queue_id=" + queueId);
 			rs.next();
@@ -151,5 +135,9 @@ public class DBHandler {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void receiveHelp(int userId, int queueId) {
+		
 	}
 }

@@ -4,6 +4,15 @@
 <%@ page import="util.Helper" %>
 
 <html>
+	<style>
+	th, td {
+		border: 1px solid black;
+		padding: 5px;
+	}
+	header * {
+		top: 50%;
+	}
+	</style>
 	<%
 		Queue queue = (Queue)session.getAttribute("queue");
 		Participant[] participants = (Participant[])session.getAttribute("participants");
@@ -15,7 +24,7 @@
 		<div style="display: flex; flex-direction: column;">
 			<header style="display: flex; flex-direction: row; background-color: #456990; justify-content: space-between; width: 100%;">
 				<div style="display: flex; flex-direction: row;">
-					<h2>stay a while longer</h2>
+					<h2 style="color: white">stay a while longer</h2>
 					<a style="color: rgba(255,255,255,.5); font-size: 1rem;"href="/project/menu">Home</a>
 				</div>
 				<div style="display: flex; flex-direction: row;">
@@ -24,7 +33,7 @@
 				</div>
 			</header>
 			
-			<div style="display: flex; flex-direction: row;">
+			<div style="display: flex; flex-direction: row; justify-content: space-around;">
 				<%
 					out.println("<div>");
 					out.println("<h1>" + queue.getName() + "</h1>");
@@ -66,7 +75,7 @@
 					if(participants.length == 0)
 						out.println("<h2>This queue is empty</h2>");
 					else {
-						out.println("<table>");
+						out.println("<table style=width: 50%; border: 1px solid black; border-collapse: collapse; margin: 10%;>");
 						out.println("<tr>" +
 										"<th>#</th>" +
 										"<th>User</th>" +
@@ -79,7 +88,6 @@
 							out.println("<tr>" +
 											"<th>" + i + "</th>" +
 											"<th>" + usernames[i] + "</th>" +
-											"<th>" + participants[i].getUserId() + "</th>" +
 											"<th>" + participants[i].getLocation() + "</th>" +
 											"<th>" + (participants[i].getHelp() ? "help" : "present") + "</th>" +
 											"<th>" + participants[i].getComment() + "</th>" +
