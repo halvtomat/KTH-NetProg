@@ -33,6 +33,21 @@ public class DBHandler {
 		return false;
 	}
 
+	public boolean registerUser(User user) {
+		System.out.println("--- DB REGISTER USER ---");
+		try {
+			st.executeQuery("INSERT INTO users (username, password) VALUES ('" + user.getUsername() + "', MD5('" + user.getPassword() + "'))");
+			ResultSet rs = st.executeQuery("SELECT * FROM users WHERE username= '" + user.getUsername() + "' AND password=MD5('" + user.getPassword() + "')");
+			rs.next();
+			user.setId(rs.getInt(1));
+			return true;
+		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO REGISTER USER ---");
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public Queue[] getQueues() {
 		System.out.println("--- DB GET QUEUES ---");
 		Queue[] queues = null;
@@ -133,11 +148,21 @@ public class DBHandler {
 			if(rs.getInt(1) != 0)
 				st.executeQuery("DELETE FROM participants WHERE user_id=" + userId + " AND queue_id=" + queueId);
 		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO DEQUEUE ---");
 			e.printStackTrace();
 		}
 	}
 
 	public void receiveHelp(int userId, int queueId) {
-		
+		System.out.println("--- DB RECEIVE HELP ---");
+		try {
+			ResultSet rs  = st.executeQuery("SELECT COUNT(*) FROM participants WHERE user_id=" + userId + " AND queue_id=" + queueId);
+			rs.next();
+			if(rs.getInt(1) != 0)
+				st.executeQuery("UPDATE participants SET receiving_help=" + true + " WHERE user_id=" + userId + " AND queue_id=" + queueId);
+		} catch (SQLException e) {
+			System.out.println("--- DB FAILED TO RECEIVE HELP ---");
+			e.printStackTrace();
+		}
 	}
 }

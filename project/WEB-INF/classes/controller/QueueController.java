@@ -101,17 +101,30 @@ public class QueueController extends HttpServlet {
 					String[] un = (String[])session.getAttribute("usernames");
 					Participant[] newPs = new Participant[ps.length - 1];
 					String[] newUn = new String[ps.length - 1];
-
+					
 					for(int i = 0, k = 0; i < ps.length; i++) {
 						if(ps[i].getUserId() == userId && ps[i].getQueueId() == queueId)
 							continue;
-						newPs[k++] = ps[i];
+						newPs[k] = ps[i];
 						newUn[k++] = un[i];
 					}
 
 					session.setAttribute("participants", newPs);
 					session.setAttribute("usernames", newUn);
 					db.dequeue(userId, queueId);
+					break;
+				}
+				case "receiving": {
+					int userId = ((User)session.getAttribute("user")).getId();
+					int queueId = ((Queue)session.getAttribute("queue")).getId();
+
+					Participant[] ps = (Participant[])session.getAttribute("participants");
+					for(Participant p : ps)
+						if(p.getUserId() == userId && p.getQueueId() == queueId)
+							p.setReceiving();
+					
+					session.setAttribute("participants", ps);
+					db.receiveHelp(userId, queueId);
 					break;
 				}
 			}

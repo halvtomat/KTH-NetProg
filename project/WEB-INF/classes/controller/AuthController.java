@@ -19,10 +19,13 @@ public class AuthController extends HttpServlet {
 		System.out.println("--- GET AUTH ---");
 		
 		HttpSession session = request.getSession(true);
-		if(!session.isNew() && (Boolean)session.getAttribute("auth") == Boolean.TRUE)
+
+		if(!session.isNew() && (Boolean)session.getAttribute("auth") == Boolean.TRUE && request.getServletPath() != "/logout")
 			response.sendRedirect("/project/menu");
-		else
+		else {
+			session.invalidate();
 			response.sendRedirect("/project/login.jsp");
+		}
 	}
 
 	@Override
@@ -42,16 +45,37 @@ public class AuthController extends HttpServlet {
 		User user = new User(username, password);
 		System.out.println(user.toString());
 
-		if(db.authenticate(user)) {
-			System.out.println("--- --- SUCCESFUL LOGIN");
-			session.setAttribute("user", user);
-			session.setAttribute("auth", true);
-			response.sendRedirect("/project/menu");
-		} else {
-			System.out.println("--- --- UNSUCCESFUL LOGIN");
-			session.setAttribute("user", null);
-			session.setAttribute("auth", false);
-			response.sendRedirect("/project/login");
+		String action = request.getParameter("action");
+		switch(action) {
+			case "login": 
+				if(db.authenticate(user)) {
+					System.out.println("--- --- SUCCESFUL LOGIN");
+					session.setAttribute("user", user);
+					session.setAttribute("auth", true);
+					response.sendRedirect("/project/menu");
+				} else {
+					System.out.println("--- --- UNSUCCESFUL LOGIN");
+					session.setAttribute("user", null);
+					session.setAttribute("auth", false);
+					response.sendRedirect("/project/login");
+				}
+				break;
+			
+			case "register":
+				if(db.registerUser(user)) {
+					System.out.println("--- --- SUCCESFUL REGISTRATION");
+					session.setAttribute("user", user);
+					session.setAttribute("auth", true);
+					response.sendRedirect("/project/menu");
+				} else {
+					System.out.println("--- --- UNSUCCESFUL REGISTRATION");
+					session.setAttribute("user", null);
+					session.setAttribute("auth", false);
+					response.sendRedirect("/project/login");
+				}
+				break;
 		}
+
+
 	}
 }

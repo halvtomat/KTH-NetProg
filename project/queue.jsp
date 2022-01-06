@@ -5,12 +5,67 @@
 
 <html>
 	<style>
+	tr {
+		border-bottom: 1px solid grey;
+	}
 	th, td {
-		border: 1px solid black;
 		padding: 5px;
+	}
+	header {
+		display: flex;
+		flex-direction: row;
+		background-color: #456990;
+		justify-content: space-between;
+		width: 100%;
 	}
 	header * {
 		top: 50%;
+		display: block;
+		text-decoration: none;
+		margin: 10px;
+	}
+	header div {
+		display: flex;
+		flex-direction: row;
+	}
+	.mainContainer {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+	}
+	.headerTitle {
+		color: white;
+	}
+	.headerLink {
+		color: rgba(255,255,255,.5);
+		font-size: 1.2rem;
+	}
+	.username {
+		color: white;
+		font-size: 1.2rem;
+	}
+	.rowContainer {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		margin: 10%;
+	}
+	.receivingHelp {
+		background-color: green;
+	}
+	.queueTable {
+		border-collapse: collapse;
+		width: 100%;
+	}
+	.queueTable * {
+		font-size: 1.3rem;
+	}
+	.leftColumn {
+		width: 30%;
+	}
+	.rightColumn {
+		width: 70%;
 	}
 	</style>
 	<%
@@ -21,21 +76,21 @@
 		out.println("<head><title>[" + participants.length + "] " + queue.getName() + " | Stay A While Longer</title></head>");
 	%>
 	<body>
-		<div style="display: flex; flex-direction: column;">
-			<header style="display: flex; flex-direction: row; background-color: #456990; justify-content: space-between; width: 100%;">
-				<div style="display: flex; flex-direction: row;">
-					<h2 style="color: white">stay a while longer</h2>
-					<a style="color: rgba(255,255,255,.5); font-size: 1rem;"href="/project/menu">Home</a>
+		<div class="mainContainer">
+			<header>
+				<div>
+					<h2 class="headerTitle">stay a while longer</h2>
+					<a class="headerLink" href="/project/menu">Home</a>
 				</div>
-				<div style="display: flex; flex-direction: row;">
-					<%  out.println("<span style=color: rgba(255,255,255,.5); font-size: 1rem;>" + user.getUsername() + "</span>"); %>
-					<a style="color: rgba(255,255,255,.5); font-size: 1rem;" href="/project/logout">Logout</a>
+				<div>
+					<%  out.println("<p class=username>" + user.getUsername() + "</p>"); %>
+					<a class="headerLink" href="/project/logout">Logout</a>
 				</div>
 			</header>
 			
-			<div style="display: flex; flex-direction: row; justify-content: space-around;">
+			<div class="rowContainer">
 				<%
-					out.println("<div>");
+					out.println("<div class=leftColumn>");
 					out.println("<h1>" + queue.getName() + "</h1>");
 					if(Helper.userInQueue(user, participants)) {
 						out.println("<form action=queue method=post>");
@@ -71,11 +126,11 @@
 					}
 					out.println("</div>");
 
-					out.println("<div>");
+					out.println("<div class=rightColumn>");
 					if(participants.length == 0)
 						out.println("<h2>This queue is empty</h2>");
 					else {
-						out.println("<table style=width: 50%; border: 1px solid black; border-collapse: collapse; margin: 10%;>");
+						out.println("<table class=queueTable>");
 						out.println("<tr>" +
 										"<th>#</th>" +
 										"<th>User</th>" +
@@ -85,7 +140,7 @@
 										"<th>Time</th>" +
 									"</tr>");
 						for(int i = 0; i < participants.length; i++) {
-							out.println("<tr>" +
+							out.println("<tr " + (participants[i].getReceivingHelp() ? "class=receivingHelp" : "") + ">" +
 											"<th>" + i + "</th>" +
 											"<th>" + usernames[i] + "</th>" +
 											"<th>" + participants[i].getLocation() + "</th>" +
