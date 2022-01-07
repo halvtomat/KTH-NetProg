@@ -19,7 +19,6 @@ public class SMTPClient {
 	Thread printer;
 
 	public void connect() {
-
 		try {
 			unencrypted = new Socket("smtp.kth.se", 587);
 			writer = new PrintWriter(unencrypted.getOutputStream());
@@ -142,12 +141,12 @@ public class SMTPClient {
 	}
 
 	public void helo() {
-		writer.print("HELO smtp.kth.se\n\r");
+		writer.print("HELO smtp.kth.se\r\n");
 		writer.flush();
 	}
 	
 	public void ehlo() {
-		writer.print("EHLO smtp.kth.se\n\r");
+		writer.print("EHLO smtp.kth.se\r\n");
 		writer.flush();
 	}
 
@@ -183,10 +182,11 @@ public class SMTPClient {
 				break;
 		}
 	}
+	
 	public static void main(String[] args) {
 		System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 		SMTPClient c = new SMTPClient();
-
+		
 		c.connect();
 		c.startPrinter();
 		while(c.isConnected)
