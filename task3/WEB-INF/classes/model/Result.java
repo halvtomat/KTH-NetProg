@@ -1,14 +1,20 @@
 package model;
 
-public class Result {
-	int userId;
-	int quizId;
-	int score;
+public class Result implements java.io.Serializable {
+	private int userId;
+	private int quizId;
+	private int score;
 
 	public Result(int userId, int quizId, int score) {
 		this.userId = userId;
 		this.quizId = quizId;
 		this.score = score;
+	}
+
+	public Result() {
+		this.userId = -1;
+		this.quizId = -1;
+		this.score = 0;
 	}
 
 	public int getUserId() {
@@ -21,6 +27,14 @@ public class Result {
 
 	public int getScore() {
 		return score;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public void setQuizId(int quizId) {
+		this.quizId = quizId;
 	}
 
 	public void setScore(int score) {

@@ -1,14 +1,20 @@
 package model;
 
-public class Question {
-	String text;
-	String[] options;
-	int[] answer;
+public class Question implements java.io.Serializable {
+	private String text;
+	private String[] options;
+	private int[] answer;
 
 	public Question(String text, String[] options, int[] answer) {
 		this.text = text;
 		this.options = options;
 		this.answer = answer;
+	}
+
+	public Question() {
+		this.text = "";
+		this.options = new String[0];
+		this.answer = new int[0];
 	}
 
 	public String getText() {
@@ -21,6 +27,18 @@ public class Question {
 
 	public int[] getAnswer() {
 		return answer;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+	
+	public void setOptions(String[] options) {
+		this.options = options;
+	}
+
+	public void setAnswer(int[] answer) {
+		this.answer = answer;
 	}
 
 	@Override
